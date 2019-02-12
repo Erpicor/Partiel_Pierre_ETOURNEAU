@@ -1,0 +1,27 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Partiel_JSON_XML
+{
+    class log
+    {
+        public string message;
+        public  DateTime date;
+        public string niveau;
+
+        public log(string _message, string _niveau)
+        {
+            message = _message;
+            date = DateTime.Now;
+            niveau = _niveau;
+        }
+
+        public log()
+        {
+
+        }
+    }
+}
