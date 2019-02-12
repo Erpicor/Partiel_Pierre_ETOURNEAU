@@ -1,0 +1,111 @@
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
+
+namespace Partiel_JSON_XML
+{
+    class Program
+    {
+        public static List<log>  ListLog;
+        static void Main(string[] args)
+        {
+            List<log> ListLog = new List<log>();
+            var exit = false;
+            while (!exit)
+            {
+                Console.WriteLine("1: Ajouter un log");
+                Console.WriteLine("2: Sauvegarder le fichier dans un nouvel XML");
+                Console.WriteLine("3: Afficher les logs avant date");
+                Console.WriteLine("4: Quitter");
+
+                var input = Console.ReadLine();
+                switch (input)
+                {
+                    case "1":
+                        Console.WriteLine("Saisir le message :\n");
+                        var message = Console.ReadLine();
+
+                        Console.WriteLine("Saisir le niveau :\n");
+                        var niveau = Console.ReadLine();
+
+                        log ObjLog = new log(message, niveau);
+                        Console.WriteLine(ObjLog.message);
+                        ObjLog.message = message;
+                        ObjLog.niveau = niveau;
+                        ObjLog.date = DateTime.Now;
+
+                        ListLog.Add(ObjLog);//J'ai finalement tenter avec une liste d'écrire dans le fichier, pour avoir plusieurs element Json, je n'arrive qu'a avoir un seul objet Json dedans
+                        AddLog(ListLog);
+                        break;
+
+
+                    case "2":
+                        SaveNewXML();
+                        break;
+
+                    case "3":
+                       // AffLogDate();
+                        break;
+
+                    case "4":
+                        exit = true;
+                        break;
+
+
+                }
+            }
+        }
+
+
+        private static void SaveNewXML()
+        {
+            //L'idée était de lire mon fichier Json avec StreamWriter, mettre le resultat dans la variable resultFic, que j'utilise après pour ecrire dans le fichier XML, cepandant, il a attend une liste et je n'ai pas trouver la solution...
+            object resultFic;
+            var JsonSeria = JsonSerializer.Create();
+            using (StreamReader sr = new StreamReader(@"C:\Users\Erpicor\source\repos\ConsoleApp5\JsonFile.txt"))
+            {
+                using (JsonReader reader = new JsonTextReader(sr))
+                {
+                    resultFic = JsonSeria.Deserialize(reader);
+                }
+            }
+
+            var serializer = new XmlSerializer(typeof(List<log>));
+            using (var sw = new StreamWriter(@"C:\Users\Erpicor\source\repos\ConsoleApp5\XMLFile.txt"))
+            {
+                serializer.Serialize(sw, resultFic);
+            }
+                   
+        }
+
+/*
+        private static void AffLogDate(DateTime date)
+        {
+            var query = from item in ListLog
+                        select ListLog.FindAll(date > log.date)//Le but etait de trouver tout les object
+        
+            foreach (var item in query)
+            {
+                Console.WriteLine(item);
+            }
+        }
+*/
+        private static void AddLog(List<log> ObjLog)
+        {
+            var serializer = JsonSerializer.Create();
+            using (StreamWriter sw = new StreamWriter(@"C:\Users\Erpicor\source\repos\ConsoleApp5\JsonFile.txt"))
+            {
+                using (JsonWriter writer = new JsonTextWriter(sw))
+                {
+                    serializer.Serialize(writer, ObjLog);
+                }
+
+            }
+        }
+    }
+}
